@@ -13,13 +13,8 @@ int main()
     // Create the main window
     sf::RenderWindow window(sf::VideoMode(800, 600), "Softbody Sim");
     // Load a sprite to display
-    sf::Texture texture;
-    if (!texture.loadFromFile("cute_image.jpeg"))
-        return EXIT_FAILURE;
-    sf::Sprite sprite(texture);
 
     // Start the game loop
-    sf::CircleShape shape(5.f);
     while (window.isOpen())
     {
         // Process events
@@ -37,21 +32,21 @@ int main()
                     std::cout << "the right button was pressed" << std::endl;
                     std::cout << "mouse x: " << event.mouseButton.x << std::endl;
                     std::cout << "mouse y: " << event.mouseButton.y << std::endl;
-                    
-                    shape.setFillColor(sf::Color(100, 250, 50));
-                    shape.setPosition(event.mouseButton.x, event.mouseButton.y);
-                    
+                    squishPoint* newPoint = new squishPoint(event.mouseButton.x, event.mouseButton.y);
+                    //Adds the new point to the global vector that is the softbody shape
+                   points.push_back(newPoint);
                 }
 }
         }
         // Clear screen
         window.clear(sf::Color::White);
-        window.draw(shape);
-        // Draw the sprite
-        //window.draw(sprite);
-        // Draw the string
-       // window.draw(text);
-        // Update the window
+        
+        for (int p = 0; p < points.size(); p++) {
+            window.draw(points[p]->shape);
+        }
+
+
+
         window.display();
     }
     return EXIT_SUCCESS;
