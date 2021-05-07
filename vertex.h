@@ -4,9 +4,11 @@
 #include <SFML/Graphics.hpp>
 class squishPoint {
     public:
-        std::vector<float> position;
-        std::vector<float> velocity;
-        std::vector<float> force;
+        sf::Vector2f position = sf::Vector2f(0, 0);
+        sf::Vector2f velocity = sf::Vector2f(0, 0);
+        sf::Vector2f force = sf::Vector2f(0, 9.8);
+        sf::Vector2f rest;
+        sf::Vector2f acc = force;
         sf::CircleShape shape;
         void CreatePoint(float x, float y);
         squishPoint();

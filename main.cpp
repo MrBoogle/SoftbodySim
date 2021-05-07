@@ -3,20 +3,44 @@
 #include <stdio.h>
 #include <iostream>
 #include <vector>
+#include <math.h>
 #include "vertex.h"
 
 std::vector<squishPoint*> points;
 
 
+float getDistance (sf::Vector2f first, sf::Vector2f sec) {
+    return sqrt(pow(first.x-sec.x, 2.0) + pow(first.y-sec.y, 2));
+}
+
+//Sets window size to be 800px by 600px
+int windowX = 800;
+int windowY = 600;
+
+void update(squishPoint* p, float speed) {
+    p->force.y = 9.8;
+    p->velocity += p->force * speed;
+    p->position += p->velocity * speed;
+    if (p->position.y > windowY - 2*p->shape.getRadius()) p->position.y = windowY - 2*p->shape.getRadius();
+    p->shape.setPosition(p->position.x,p->position.y);
+    
+}
+
+
 int main()
 {
     // Create the main window
-    sf::RenderWindow window(sf::VideoMode(800, 600), "Softbody Sim");
+    sf::RenderWindow window(sf::VideoMode(windowX, windowY), "Softbody Sim");
     // Load a sprite to display
 
+    sf::Clock clock;
+    float lastTime = 0;
     // Start the game loop
     while (window.isOpen())
     {
+        float currentTime = clock.restart().asSeconds();
+        float fps = 1.f / (currentTime - lastTime);
+        lastTime = currentTime;
         // Process events
         sf::Event event;
         while (window.pollEvent(event))
@@ -29,9 +53,6 @@ int main()
 {
                 if (event.mouseButton.button == sf::Mouse::Right)
                 {
-                    std::cout << "the right button was pressed" << std::endl;
-                    std::cout << "mouse x: " << event.mouseButton.x << std::endl;
-                    std::cout << "mouse y: " << event.mouseButton.y << std::endl;
                     squishPoint* newPoint = new squishPoint(event.mouseButton.x, event.mouseButton.y);
                     //Adds the new point to the global vector that is the softbody shape
                    points.push_back(newPoint);
@@ -41,11 +62,16 @@ int main()
         // Clear screen
         window.clear(sf::Color::White);
         
+
+        
+        sf::VertexArray connectLine(sf::LinesStrip, points.size());
         for (int p = 0; p < points.size(); p++) {
+            //if (points.size() >= 3 || true) window.draw(connectLine);
+            update(points[p], 0.002);
             window.draw(points[p]->shape);
         }
 
-
+        
 
         window.display();
     }
