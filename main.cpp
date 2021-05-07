@@ -7,6 +7,7 @@
 #include "vertex.h"
 
 std::vector<squishPoint*> points;
+std::vector<std::pair<float, std::pair<sf::Vector2f, sf::Vector2f>>> springs;
 
 
 float getDistance (sf::Vector2f first, sf::Vector2f sec) {
@@ -64,7 +65,17 @@ int main()
                 {
                     squishPoint* newPoint = new squishPoint(event.mouseButton.x, event.mouseButton.y);
                     //Adds the new point to the global vector that is the softbody shape
-                   points.push_back(newPoint);
+                    points.push_back(newPoint);
+                    //Update springs between points
+                    if (points.size() >= 2) {
+                        float initDist = getDistance (points[springs.size()-1]->position, newPoint->position);
+                        springs[springs.size()-1] = std::make_pair(initDist, std::make_pair(points[springs.size()-1]->position, newPoint->position));
+                        float lastDist = getDistance (points[0]->position, newPoint->position);
+                        springs.push_back(std::make_pair(lastDist, std::make_pair(newPoint->position, points[0]->position)));
+
+                    }
+
+
                 } else if (event.mouseButton.button == sf::Mouse::Left) {
                     if (event.mouseButton.x > 750 && event.mouseButton.y < 50) {
                         if (play) {
@@ -83,10 +94,14 @@ int main()
         
         if (play)
         
-        sf::VertexArray connectLine(sf::LinesStrip, points.size());
         for (int p = 0; p < points.size(); p++) {
-            //if (points.size() >= 3 || true) window.draw(connectLine);
+            
+
+
+
+            //Update position of all points
             if (play) update(points[p], 0.002);
+            //Draw all points
             window.draw(points[p]->shape);
         }
 
