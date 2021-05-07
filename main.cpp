@@ -10,6 +10,7 @@ std::vector<squishPoint*> points;
 std::vector<std::pair<float, std::pair<sf::Vector2f, sf::Vector2f>>> springs;
 
 
+
 float getDistance (sf::Vector2f first, sf::Vector2f sec) {
     return sqrt(pow(first.x-sec.x, 2.0) + pow(first.y-sec.y, 2));
 }
@@ -35,6 +36,8 @@ int main()
     // Create the main window
     sf::RenderWindow window(sf::VideoMode(windowX, windowY), "Softbody Sim");
     // Load a sprite to display
+
+    springs.resize(1);
 
     sf::RectangleShape playButton;
     playButton.setSize(sf::Vector2f(50, 50));
@@ -66,7 +69,7 @@ int main()
                     squishPoint* newPoint = new squishPoint(event.mouseButton.x, event.mouseButton.y);
                     //Adds the new point to the global vector that is the softbody shape
                     points.push_back(newPoint);
-                    //Update springs between points
+                    //Create springs between new points
                     if (points.size() >= 2) {
                         float initDist = getDistance (points[springs.size()-1]->position, newPoint->position);
                         springs[springs.size()-1] = std::make_pair(initDist, std::make_pair(points[springs.size()-1]->position, newPoint->position));
@@ -92,15 +95,20 @@ int main()
         // Clear screen
         window.clear(sf::Color::White);
         
-        if (play)
+        
         
         for (int p = 0; p < points.size(); p++) {
             
 
-
-
+        
             //Update position of all points
             if (play) update(points[p], 0.002);
+
+            if (points.size() >= 2) {
+                sf::Vertex line[] = {{{points[p]->position.x, points[p]->position.y}, sf::Color::Black}, {{points[(p+1)%points.size()]->position.x, points[(p+1)%points.size()]->position.y}, sf::Color::Black}};
+                window.draw(line, 2, sf::Lines);
+            }
+
             //Draw all points
             window.draw(points[p]->shape);
         }
