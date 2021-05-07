@@ -35,6 +35,13 @@ int main()
     sf::RenderWindow window(sf::VideoMode(windowX, windowY), "Softbody Sim");
     // Load a sprite to display
 
+    sf::RectangleShape playButton;
+    playButton.setSize(sf::Vector2f(50, 50));
+    playButton.setPosition(750, 0);
+    playButton.setFillColor(sf::Color::Red);
+    bool play = false;
+
+
     sf::Clock clock;
     float lastTime = 0;
     // Start the game loop
@@ -58,22 +65,32 @@ int main()
                     squishPoint* newPoint = new squishPoint(event.mouseButton.x, event.mouseButton.y);
                     //Adds the new point to the global vector that is the softbody shape
                    points.push_back(newPoint);
+                } else if (event.mouseButton.button == sf::Mouse::Left) {
+                    if (event.mouseButton.x > 750 && event.mouseButton.y < 50) {
+                        if (play) {
+                            play = false;
+                            playButton.setFillColor(sf::Color::Red);
+                        } else {
+                            play = true;
+                            playButton.setFillColor(sf::Color::Green);
+                        }
+                    }
                 }
 }
         }
         // Clear screen
         window.clear(sf::Color::White);
         
-
+        if (play)
         
         sf::VertexArray connectLine(sf::LinesStrip, points.size());
         for (int p = 0; p < points.size(); p++) {
             //if (points.size() >= 3 || true) window.draw(connectLine);
-            update(points[p], 0.002);
+            if (play) update(points[p], 0.002);
             window.draw(points[p]->shape);
         }
 
-        
+        window.draw(playButton);
 
         window.display();
     }
