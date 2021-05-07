@@ -18,10 +18,12 @@ int windowX = 800;
 int windowY = 600;
 
 void update(squishPoint* p, float speed) {
-    p->force.y = 9.8;
     p->velocity += p->force * speed;
     p->position += p->velocity * speed;
     if (p->position.y > windowY - 2*p->shape.getRadius()) p->position.y = windowY - 2*p->shape.getRadius();
+    else if (p->position.y < 0) p->position.y = 0;
+    if (p->position.x > windowX - 2*p->shape.getRadius()) p->position.x = windowX - 2*p->shape.getRadius();
+    else if (p->position.x < 0) p->position.x = 0;
     p->shape.setPosition(p->position.x,p->position.y);
     
 }
