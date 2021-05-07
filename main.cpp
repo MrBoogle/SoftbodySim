@@ -18,8 +18,22 @@ float getDistance (sf::Vector2f first, sf::Vector2f sec) {
 //Sets window size to be 800px by 600px
 int windowX = 800;
 int windowY = 600;
+float springConstant = 1;
 
-void update(squishPoint* p, float speed) {
+void updateForce(int index) {
+    int secPoint = (index+1)%points.size();
+    float currentLen = getDistance(points[index]->position, points[secPoint]->position);
+    float mag = (springs[index].first - currentLen) * springConstant;
+    points[index]->force.x = mag * ((points[index]->position.x - points[secPoint]->position.x) / currentLen);
+    points[index]->force.y = mag * ((points[index]->position.y - points[secPoint]->position.y) / currentLen);
+    points[secPoint]->force.x = -mag * ((points[index]->position.x - points[secPoint]->position.x) / currentLen);
+    points[secPoint]->force.y = -mag * ((points[index]->position.y - points[secPoint]->position.y) / currentLen);
+}
+
+void update(int index, float speed) {
+    squishPoint* p = points[index];
+    updateForce(index);
+    p->force.y += 9.8;
     p->velocity += p->force * speed;
     p->position += p->velocity * speed;
     if (p->position.y > windowY - 2*p->shape.getRadius()) p->position.y = windowY - 2*p->shape.getRadius();
@@ -102,10 +116,10 @@ int main()
 
         
             //Update position of all points
-            if (play) update(points[p], 0.002);
+            if (play) update(p, 0.002);
 
             if (points.size() >= 2) {
-                sf::Vertex line[] = {{{points[p]->position.x, points[p]->position.y}, sf::Color::Black}, {{points[(p+1)%points.size()]->position.x, points[(p+1)%points.size()]->position.y}, sf::Color::Black}};
+                sf::Vertex line[] = {{{points[p]->position.x+5, points[p]->position.y+5}, sf::Color::Black}, {{points[(p+1)%points.size()]->position.x+5, points[(p+1)%points.size()]->position.y+5}, sf::Color::Black}};
                 window.draw(line, 2, sf::Lines);
             }
 
